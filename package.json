@@ -4,7 +4,7 @@
   "description": "CHIP-8 emulator made with AssemblyScript",
   "main": "index.js",
   "scripts": {
-    "build": "asc core/index.ts -b build/untouched.wasm -t build/untouched.wat -O3 --converge",
+    "build": "asc core/index.ts -b build/untouched.wasm -t build/untouched.wat -O3 --converge --importMemory",
     "serve": "nodemon server.js"
   },
   "repository": {
