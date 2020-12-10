@@ -1,6 +1,6 @@
-import { log } from './console';
-import { fontset } from './graphics';
+import { fontset } from './fontset';
 import { CHIP8_FONTSET_START, CHIP8_PROGRAM_RAM_START } from './constants';
+import { handleOpcode } from './opcodes';
 
 export class Cpu {
     /* Registers V0 - VF */
@@ -12,11 +12,9 @@ export class Cpu {
     /* Program counter */
     static pc: u16;
 
-    /* 64 x 32 display */
-    static graphics: Uint8Array = new Uint8Array(64 * 32);
-
-    /* 48 bytes up to 12 levels of nesting */
-    static stack: Uint32Array = new Uint32Array(12);
+    //static stack: Uint16Array = new Uint16Array(16);
+    //TODO: limit size
+    static stack: u16[] = [];
     static sp: u16;
 
     static opcode: u16;
@@ -32,24 +30,34 @@ export class Cpu {
         Cpu.I = 0;
         Cpu.sp = 0;
 
+        /* Clear stack */
+        Cpu.stack.length = 0;
+
         /* Load fontset */
         for (let i = 0; i < 80; i++) {
             store<u8>(CHIP8_FONTSET_START + (sizeof<u8>() * i), fontset[i]);
         };
     };
 
-    static cycle(): void {
+    static step(): void {
         /**
          * Fetch opcode, decode, execute
          * Update timers
          */
 
+         /* Load instruction from program memory */
+        let opcode = load<u16>(Cpu.pc);
+
+        /* Increment program counter to point to next instruction */
+        Cpu.pc += 2;
+
+        /* Execute instruction */
+        handleOpcode(opcode);
     };
 
-    static loadProgram(programBuffer: Uint8Array): void {
+    static loadProgram(programBuffer: Uint16Array): void {
         for(let i = 0; i < programBuffer.length; i++) {
-            log(programBuffer[i]);
-            store<u8>(CHIP8_PROGRAM_RAM_START + (sizeof<u8>() * i), programBuffer[i]);
+            store<u16>(CHIP8_PROGRAM_RAM_START + (sizeof<u16>() * i), programBuffer[i]);
         };
     }; 
 };

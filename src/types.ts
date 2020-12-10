@@ -1,0 +1,1 @@
+export type FileElement = HTMLInputElement & { files: File[] };

@@ -1,3 +1,7 @@
 node_modules
 notes
 roms
+wasm8.wat
+wasm8.wasm
+types.d.ts
+dist
