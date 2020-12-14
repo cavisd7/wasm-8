@@ -1,6 +1,7 @@
 import { fontset } from './fontset';
 import { CHIP8_FONTSET_START, CHIP8_PROGRAM_RAM_START } from './constants';
 import { handleOpcode } from './opcodes';
+import { log } from './console';
 
 export class Cpu {
     /* Registers V0 - VF */
@@ -45,19 +46,19 @@ export class Cpu {
          * Update timers
          */
 
-         /* Load instruction from program memory */
+        /* Load instruction from program memory */
         let opcode = load<u16>(Cpu.pc);
 
         /* Increment program counter to point to next instruction */
         Cpu.pc += 2;
 
         /* Execute instruction */
-        handleOpcode(opcode);
+        handleOpcode((opcode >> 8) | (opcode << 8));
     };
 
-    static loadProgram(programBuffer: Uint16Array): void {
+    static loadProgram(programBuffer: Uint8Array): void {
         for(let i = 0; i < programBuffer.length; i++) {
-            store<u16>(CHIP8_PROGRAM_RAM_START + (sizeof<u16>() * i), programBuffer[i]);
+            store<u8>(CHIP8_PROGRAM_RAM_START + (sizeof<u8>() * i), programBuffer[i]);
         };
     }; 
 };

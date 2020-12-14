@@ -1,6 +1,8 @@
 import { Screen } from './Screen';
 import { Cpu } from './Cpu';
 import { Timer } from './Timer';
+import { DISPLAY_RERFRESH_START } from './constants';
+import { log } from './console';
 
 export function handleOpcode(opcode: u16): void {
     const nibble: u16 = opcode & 0xF000;
@@ -81,27 +83,37 @@ export function handleOpcode(opcode: u16): void {
             break;
         case 0xD000:
             /* Draw sprite */
+            /* X and Y position where the sprite will be drawn on screen */
             const xPos = Cpu.registers[(opcode & 0x0F00) >> 8]; 
             const yPos = Cpu.registers[(opcode & 0x00F0) >> 4];
-            const n = opcode & 0x000F;
+
+            /* Height of the sprite. Can range from 1 to 16 pixels. */
+            const height = opcode & 0x000F;
             
             Cpu.registers[15] = 0;
 
-            for (let i: u16 = 0; i < n; i++) {
-                const mem = load<u8>(Cpu.I + i);
+            /* Loop through height of the sprite */
+            for (let y: u16 = 0; y < height; y++) {
+                /* Load row of sprite */
+                const spriteRow = load<u8>(Cpu.I + y);
 
-                for (let j: u8 = 0; j < 8; j++) {
-                    const pixel = (mem >> (7 - j)) & 0x01;
-                    const index = xPos + j + (yPos + i) * 64; 
+                /* Loop through width of sprite. Sprite width is fixed to 8 pixels. */
+                for (let x: u8 = 0; x < 8; x++) {
+                    /* Get one bit from the sprite row which represents one pixel. */
+                    const pixel = (spriteRow >> (7 - x)) & 0x01;
+                    const index = (xPos + x + (yPos + y) * 64) / 8; 
+                    const currentByte = load<u8>(DISPLAY_RERFRESH_START + index);
 
-                    if (pixel == 1 && Screen.framebuffer[index] != 0) {
+                    if (index > 255) continue;
+
+                    if (pixel == 1 && (currentByte & (1 << x)) != 0) {
                         Cpu.registers[15] = 1;
                     };
 
-                    if ((Screen.framebuffer[index] != 0 && pixel == 0) || (Screen.framebuffer[index] == 0 && pixel == 1)) {
-                        Screen.framebuffer[index] = 0xFFFFFFFF;
+                    if (((currentByte & (1 << x)) != 0 && pixel == 0) || ((currentByte & (1 << x)) == 0 && pixel == 1)) {
+                        store<u8>(DISPLAY_RERFRESH_START + index, currentByte | (0x01 << x));
                     } else {
-                        Screen.framebuffer[index] = 0;
+                        store<u8>(DISPLAY_RERFRESH_START + index, currentByte | (0x00 << x));
                     };
                 };
             };
@@ -112,7 +124,8 @@ export function handleOpcode(opcode: u16): void {
         case 0xF000:
             handleOpcode0xF(opcode);
         default:
-            break;
+            //break;
+            throw new Error('Unrecognized opcode');
     };
 };
 
@@ -130,7 +143,8 @@ export function handleOpcode0x0(opcode: u16): void {
             break;
         /* 0NNN not supported */
         default:
-            break;
+            //break;
+            throw new Error('[handleOpcode0x0] Unrecognized opcode');
     };
 };
 
@@ -185,18 +199,24 @@ export function handleOpcode0x8(opcode: u16): void {
             break;
         default:
             /* Unsupported opcode */
-            break;
+            throw new Error('[handleOpcode0x8] Unrecognized opcode');
+            //break;
     };
 };
 
 export function handleOpcode0xE(opcode: u16): void {
     switch (opcode & 0x00FF) {
         case 0x9E:
+            //TODO
+
             break;
         case 0xA1:
+            //TODO
+
             break;
         default:
-            break;
+            throw new Error('[handleOpcode0xE] Unrecognized opcode');
+            //break;
     }
 };
 
@@ -209,6 +229,9 @@ export function handleOpcode0xF(opcode: u16): void {
 
             break;
         case 0x0A:
+            //TODO
+            Cpu.pc -= 2;
+            
             break;
         case 0x15:
             Timer.DelayTimer = Cpu.registers[x];
@@ -245,6 +268,7 @@ export function handleOpcode0xF(opcode: u16): void {
 
             break;
         default:
-            break;
+            throw new Error('[handleOpcode0xF] Unrecognized opcode');
+            //break;
     };
 };

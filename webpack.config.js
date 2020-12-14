@@ -1,7 +1,10 @@
 const path = require('path');
 
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 module.exports = {
-    entry: './src/main.ts',
+    entry: './src/index.tsx',
     mode: 'development',
     devtool: 'source-map',
     devServer: {
@@ -17,20 +20,27 @@ module.exports = {
     },
 
     resolve: {
-        // Add `.ts` and `.tsx` as a resolvable extension.
         extensions: [".ts", ".tsx", ".js"]
     },
     module: {
         rules: [
-            // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
             { 
                 test: /\.tsx?$/,
-                loader: "ts-loader" 
+                loader: "ts-loader",
+                exclude: /node_modules/ 
             },
             {
                 test: /\.wasm$/,
                 loader: "wasm-loader"
             }
         ]
-    }
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: './index.html',
+            filename: 'index.html',
+            inject: true
+        }),
+        new webpack.HotModuleReplacementPlugin()
+    ]
 };

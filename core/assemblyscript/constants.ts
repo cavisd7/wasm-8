@@ -1,9 +1,25 @@
 export const ASSEMBLYSCRIPT_MEMORY_START: i32 = 0x000000;
 
 /* Where the CHIP-8 interpreter would reside in an original system. */
+/* This emulator stores registers, sp, and other variables here */
 export const CHIP8_RESERVED_START: i32 = ASSEMBLYSCRIPT_MEMORY_START;
 /* 0x000 - 0x200 */
 export const CHIP8_RESERVED_SIZE: i32 = 0x000200;
+
+/* Registers V0 - VF */
+/* 0x000 - 0x010 */
+
+/* 16-bit address register */
+/* 0x010 - 0x012 */
+
+/* Program counter */
+/* 0x012 - 0x014 */
+
+/* Stack pointer */
+/* 0x014 - 0x016 */
+
+/* Opcode */
+/* 0x016 - 0x018 */
 
 /**
  * This emulator uses the memory reserved for the CHIP-8 interpreter to store the fontset 

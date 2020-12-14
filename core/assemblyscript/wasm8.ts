@@ -10,16 +10,20 @@ export function start(): void {
 
 function init(): void {
     Cpu.init();
-    Screen.clearScreen();
+    Screen.turnOnScreen();
 };
 
-export function loadProgram(programBuffer: Uint16Array): void {
+export function loadProgram(programBuffer: Uint8Array): void {
     Cpu.loadProgram(programBuffer);
-    log(42);
 };
 
 export function execute(): void {
-    while(true) {
-        Cpu.step();
+    Cpu.step();
+};
+
+export function checkWasmMemory(start: i32, offset: i32): void {
+    for (let i = start; i < offset + start; i++) {
+        const byte = load<u8>(i);
+        log(byte);
     };
 };

@@ -1,4 +1,4 @@
-export { start, loadProgram, execute } from './wasm8';
+export { start, loadProgram, execute, checkWasmMemory } from './wasm8';
 export { Cpu } from './Cpu';
 export { 
     ASSEMBLYSCRIPT_MEMORY_START,
@@ -14,4 +14,4 @@ export {
     DISPLAY_RERFRESH_SIZE
 } from './constants';
 
-export const Uint16Array_ID = idof<Uint16Array>();
+export const Uint8Array_ID = idof<Uint8Array>();
