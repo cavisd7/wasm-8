@@ -7,11 +7,11 @@ export const loadWasm = async () => {
             memory: new WebAssembly.Memory({ initial: 1 }),
             abort(_msg, _file, line, column) {
                 console.error("abort called at index.ts:" + line + ":" + column);
-            },
+            },          
             seed: () => 236723487961
         },
         console: {
-            consoleLog: value => console.log('[wasm]: ' + value)
+            consoleLog: value => console.log('[wasm]: ' + value),
         }
     });
 

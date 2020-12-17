@@ -1,4 +1,13 @@
-export { start, loadProgram, execute, checkWasmMemory } from './wasm8';
+export { 
+    start, 
+    loadProgram, 
+    execute,
+    key_down,
+    key_up, 
+    decrementDeleyTimer,
+    checkWasmMemory, 
+    fontDrawTest 
+} from './wasm8';
 export { Cpu } from './Cpu';
 export { 
     ASSEMBLYSCRIPT_MEMORY_START,

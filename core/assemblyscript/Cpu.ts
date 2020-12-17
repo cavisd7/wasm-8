@@ -20,6 +20,11 @@ export class Cpu {
 
     static opcode: u16;
 
+    static key: u16;
+    static waitingForKeyPress: bool = false;
+
+    static delayTimer: u8;
+
     /* Initialize registers and memory */
     static init (): void {
         /**
@@ -60,5 +65,16 @@ export class Cpu {
         for(let i = 0; i < programBuffer.length; i++) {
             store<u8>(CHIP8_PROGRAM_RAM_START + (sizeof<u8>() * i), programBuffer[i]);
         };
-    }; 
+    };
+
+    static keyPressed(key: u16): void {
+        Cpu.waitingForKeyPress = false;
+
+        const leOpcode = load<u16>(Cpu.pc);
+        const opcode = (leOpcode >> 8) | (leOpcode << 8);
+        //store<u16>((opcode & 0x0F00) >> 8, key);
+        Cpu.registers[(opcode & 0x0F00) >> 8] = key;
+
+        Cpu.pc += 2;
+    };
 };

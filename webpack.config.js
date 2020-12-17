@@ -1,6 +1,7 @@
 const path = require('path');
 
 const webpack = require('webpack');
+const autoprefixer = require('autoprefixer');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -32,7 +33,28 @@ module.exports = {
             {
                 test: /\.wasm$/,
                 loader: "wasm-loader"
-            }
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    require.resolve('style-loader'),
+                    {
+                        loader: require.resolve('css-loader')
+                    },
+                    {
+                        loader: require.resolve('postcss-loader'),
+                        options: {
+                            ident: 'postcss',
+                            plugins: () => [
+                                require('postcss-flexbugs-fixes'),
+                                autoprefixer({
+                                    flexbox: 'no-2009'
+                                })
+                            ]
+                        }
+                    }
+                ]
+            },
         ]
     },
     plugins: [

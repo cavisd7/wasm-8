@@ -1,4 +1,4 @@
-import { Component, h } from 'preact';
+import { Component, h, createRef, RefObject } from 'preact';
 
 import { WasmCore } from '../types';
 import { readProgramAsBytes } from '../utils/wasmUtils';
@@ -11,6 +11,14 @@ interface Props {
 interface State {};
 
 export class Rom extends Component<Props, State> {
+    private inputRef: RefObject<HTMLInputElement>;
+
+    constructor(props) {
+        super(props);
+        
+        this.inputRef = createRef();
+    }
+
     componentDidMount() {};
 
     loadProgram = (file: File, name: string) => {
@@ -40,10 +48,17 @@ export class Rom extends Component<Props, State> {
 
     render() {
         return (
-            <div>
-                <input 
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '1rem' }}>
+                <button
+                    onClick={() => this.inputRef.current.click()}
+                >
+                    Insert ROM
+                </button>
+                <input
+                    style={{ display: 'none' }} 
                     type='file' 
                     accept='.ch8'
+                    ref={this.inputRef}
                     onChange={this.handleChange}
                 />
             </div>

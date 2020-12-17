@@ -1,7 +1,7 @@
 import { Screen } from './Screen';
 import { Cpu } from './Cpu';
 import { Timer } from './Timer';
-import { DISPLAY_RERFRESH_START } from './constants';
+import { DISPLAY_RERFRESH_START, VERBOSE_DISPLAY_RERFRESH_START } from './constants';
 import { log } from './console';
 
 export function handleOpcode(opcode: u16): void {
@@ -19,6 +19,7 @@ export function handleOpcode(opcode: u16): void {
             break;
         case 0x2000:
             /* Call subroutine at NNN */
+            log(69)
             Cpu.stack.push(Cpu.pc);
             Cpu.pc = opcode & 0x0FFF;
 
@@ -83,37 +84,61 @@ export function handleOpcode(opcode: u16): void {
             break;
         case 0xD000:
             /* Draw sprite */
-            /* X and Y position where the sprite will be drawn on screen */
+            /* X (0 - 63) and Y (0 - 31) position where the sprite will be drawn on screen */
             const xPos = Cpu.registers[(opcode & 0x0F00) >> 8]; 
             const yPos = Cpu.registers[(opcode & 0x00F0) >> 4];
 
-            /* Height of the sprite. Can range from 1 to 16 pixels. */
+            /* Height (0 - 15) of the sprite. Can range from 1 to 16 pixels. */
             const height = opcode & 0x000F;
             
             Cpu.registers[15] = 0;
+
+            /* Dump */
+            if (0) {
+                log(xPos);              
+                log(yPos);              
+                log(height);            
+                log(Cpu.registers[15]); 
+            };
 
             /* Loop through height of the sprite */
             for (let y: u16 = 0; y < height; y++) {
                 /* Load row of sprite */
                 const spriteRow = load<u8>(Cpu.I + y);
 
-                /* Loop through width of sprite. Sprite width is fixed to 8 pixels. */
+                /* Dump */
+                if (0) log(spriteRow);
+
+                /* Loop through each bit of sprite. Sprite width is fixed to 8 pixels. */
                 for (let x: u8 = 0; x < 8; x++) {
-                    /* Get one bit from the sprite row which represents one pixel. */
-                    const pixel = (spriteRow >> (7 - x)) & 0x01;
-                    const index = (xPos + x + (yPos + y) * 64) / 8; 
-                    const currentByte = load<u8>(DISPLAY_RERFRESH_START + index);
+                    /* current bit from the sprite row which represents one pixel. */
+                    const spritePixel = (spriteRow >> (7 - x)) & 0x01;
 
-                    if (index > 255) continue;
+                    /* Pixel in framebuffer (0 - 2047) */
+                    const index = xPos + x + (yPos + y) * 64; 
 
-                    if (pixel == 1 && (currentByte & (1 << x)) != 0) {
+                    /* Current byte of the framebuffer */
+                    const screenByte = load<u8>(VERBOSE_DISPLAY_RERFRESH_START + index);
+
+                    /* Dump */
+                    if (0) {
+                        log(spritePixel)
+                        log(index)
+                        log(screenByte)
+                    };
+
+                    if (index > 2047) {
+                        continue;   
+                    };
+
+                    if (spritePixel == 1 && screenByte != 0) {
                         Cpu.registers[15] = 1;
                     };
 
-                    if (((currentByte & (1 << x)) != 0 && pixel == 0) || ((currentByte & (1 << x)) == 0 && pixel == 1)) {
-                        store<u8>(DISPLAY_RERFRESH_START + index, currentByte | (0x01 << x));
+                    if ((screenByte != 0 && spritePixel == 0) || (screenByte == 0 && spritePixel == 1)) {
+                        store<u8>(VERBOSE_DISPLAY_RERFRESH_START + index, 0x01);
                     } else {
-                        store<u8>(DISPLAY_RERFRESH_START + index, currentByte | (0x00 << x));
+                        store<u8>(VERBOSE_DISPLAY_RERFRESH_START + index, 0x00);
                     };
                 };
             };
@@ -121,10 +146,13 @@ export function handleOpcode(opcode: u16): void {
             break;
         case 0xE000:
             handleOpcode0xE(opcode);
+
+            break;
         case 0xF000:
             handleOpcode0xF(opcode);
+
+            break;
         default:
-            //break;
             throw new Error('Unrecognized opcode');
     };
 };
@@ -133,7 +161,7 @@ export function handleOpcode0x0(opcode: u16): void {
     switch(opcode) {
         /* Clear screen */
         case 0x00E0:
-            Screen.clearScreen();
+            Screen.clearVerboseScreen();
 
             break;
         /* Return from subroutine */
@@ -143,7 +171,6 @@ export function handleOpcode0x0(opcode: u16): void {
             break;
         /* 0NNN not supported */
         default:
-            //break;
             throw new Error('[handleOpcode0x0] Unrecognized opcode');
     };
 };
@@ -200,23 +227,25 @@ export function handleOpcode0x8(opcode: u16): void {
         default:
             /* Unsupported opcode */
             throw new Error('[handleOpcode0x8] Unrecognized opcode');
-            //break;
     };
 };
 
 export function handleOpcode0xE(opcode: u16): void {
     switch (opcode & 0x00FF) {
         case 0x9E:
-            //TODO
+            if (((Cpu.key >> Cpu.registers[(opcode & 0x0F00) >> 8]) & 0x01) == 0x01) {
+                Cpu.pc += 2;
+            };
 
             break;
         case 0xA1:
-            //TODO
+            if (((Cpu.key >> Cpu.registers[(opcode & 0x0F00) >> 8]) & 0x01) != 0x01) {
+                Cpu.pc += 2;
+            };
 
             break;
         default:
             throw new Error('[handleOpcode0xE] Unrecognized opcode');
-            //break;
     }
 };
 
@@ -229,7 +258,7 @@ export function handleOpcode0xF(opcode: u16): void {
 
             break;
         case 0x0A:
-            //TODO
+            Cpu.waitingForKeyPress = true;
             Cpu.pc -= 2;
             
             break;
@@ -269,6 +298,5 @@ export function handleOpcode0xF(opcode: u16): void {
             break;
         default:
             throw new Error('[handleOpcode0xF] Unrecognized opcode');
-            //break;
     };
 };
