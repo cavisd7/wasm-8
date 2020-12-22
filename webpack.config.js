@@ -66,3 +66,22 @@ module.exports = {
         new webpack.HotModuleReplacementPlugin()
     ]
 };
+
+/**
+ * require.resolve('style-loader'),
+                    {
+                        loader: require.resolve('css-loader')
+                    },
+                    {
+                        loader: require.resolve('postcss-loader'),
+                        options: {
+                            ident: 'postcss',
+                            plugins: () => [
+                                require('postcss-flexbugs-fixes'),
+                                autoprefixer({
+                                    flexbox: 'no-2009'
+                                })
+                            ]
+                        }
+                    }
+ */

@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run build:asc && webpack",
-    "build:asc": "asc --sourceMap --optimize -b ./core/wasm8.wasm -t ./core/wasm8.wat -d ./core/types.d.ts ./core/assemblyscript/index.ts",
-    "start": "npm run build:asc && webpack serve"
+    "build:asc": "asc --memoryBase 6144 --sourceMap --optimize -b ./core/wasm8.wasm -t ./core/wasm8.wat -d ./core/types.d.ts ./core/assemblyscript/index.ts",
+    "start": "npm run build:asc && webpack serve",
+    "test": "asp --verbose"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,9 @@
     "preact": "^10.5.7"
   },
   "devDependencies": {
+    "@as-pect/assembly": "^5.0.0",
+    "@as-pect/cli": "^5.0.0",
+    "@as-pect/core": "^5.0.0",
     "@types/classnames": "^2.2.11",
     "assemblyscript": "0.17.2",
     "autoprefixer": "9.8.6",

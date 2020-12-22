@@ -31,7 +31,6 @@ export class RomMenu extends Component<Props, State> {
             const buffer = await readProgramAsBytes(file);
 
             this.props.wasm8Core.memory.set(buffer, exports.CHIP8_PROGRAM_RAM_START);
-            console.log(this.props.wasm8Core.memory);
         };
     
         const runTask = task();

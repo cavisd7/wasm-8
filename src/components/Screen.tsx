@@ -24,12 +24,16 @@ const keyMap = {
 interface Props {
     wasm8Core: WasmCore;
     isROMLoaded: boolean;
+    isWasm8Running: boolean;
 };
 
 interface State {};
 
+let lastTick = 0;
+let fps = 0;
+
 export class Screen extends Component<Props, State> {
-    updateTimeout;
+    private updateTimeout;
 
     constructor() {
         super();
@@ -50,17 +54,37 @@ export class Screen extends Component<Props, State> {
         scaledCtx.clearRect(0, 0, scaledCanvas.width, scaledCanvas.height);
         scaledCtx.scale(10, 10);
 
-        const updateCallback = () => {
-            this.updateCallback(canvas, ctx, scaledCtx, imageData);
-            this.updateTimeout = setTimeout(updateCallback, 1000 / 60); //60 times per second
-            
-            if (this.props.isROMLoaded) {
-                wasm8Core.instance.exports.execute();
-                wasm8Core.instance.exports.decrementDeleyTimer();
+        const update = () => {
+            if (!lastTick) {
+                lastTick = performance.now();
+            } else {
+                let timeElapsed = (performance.now() - lastTick) / 1000;
+                lastTick = performance.now();
+                fps = 1 / timeElapsed;
             };
+
+            //console.log('fps: ', fps);
+
+            if (this.props.isROMLoaded && this.props.isWasm8Running) {
+                /**
+                 * Run cpu at 500Hz
+                 */
+                for (let i = 0; i < 8; i++) {
+                    wasm8Core.instance.exports.emulateCycle();
+                };
+
+                wasm8Core.instance.exports.decrementDeleyTimer();
+
+                this.draw(canvas, ctx, scaledCtx, imageData);
+            };
+
+            /**
+             * Render at about 60 times a second 
+             */
+            window.requestAnimationFrame(update);
         };
 
-        updateCallback();
+        update();
 
         window.addEventListener('keydown', (e: KeyboardEvent) => {
             console.log('key down: ', keyMap[e.code]);
@@ -83,7 +107,7 @@ export class Screen extends Component<Props, State> {
         clearTimeout(this.updateTimeout);
     };
 
-    updateCallback(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, scaledCtx: CanvasRenderingContext2D, imageData: ImageData) {
+    draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, scaledCtx: CanvasRenderingContext2D, imageData: ImageData) {
         if (1) {
             const imageBuffer = this.props.wasm8Core.memory.subarray(4095, 6143);
             const imageDataArray = new Uint8ClampedArray(64 * 32 * 4);
@@ -91,7 +115,7 @@ export class Screen extends Component<Props, State> {
             //console.log('imageBuffer: ', imageBuffer);
 
             for (let i = 0; i < imageBuffer.length; i++) {
-                if (imageBuffer[i] == 1) {
+                if (imageBuffer[i] == 255) {
                     imageDataArray[i * 4] = 79;
                     imageDataArray[i * 4 + 1] = 205;
                     imageDataArray[i * 4 + 2] = 185;
@@ -108,8 +132,9 @@ export class Screen extends Component<Props, State> {
                 imageData.data[i] = imageDataArray[i];
             };
 
-            //ctx.beginPath();
-            //ctx.clearRect(0, 0, 64, 32);
+            ctx.beginPath();
+            ctx.clearRect(0, 0, 64, 32);
+            scaledCtx.clearRect(0, 0, 640, 320);
             ctx.putImageData(imageData, 0, 0);
             scaledCtx.drawImage(canvas, 0, 0);
         } else {
@@ -138,16 +163,16 @@ export class Screen extends Component<Props, State> {
                 imageData.data[i] = imageDataArray[i];
             };
 
-            ctx.beginPath();
-            //ctx.clearRect(0, 0, 64, 32);
+            //ctx.beginPath();
+            ctx.clearRect(0, 0, 64, 32);
             ctx.putImageData(imageData, 0, 0);
-            scaledCtx.drawImage(canvas, 0, 0);
+            //scaledCtx.drawImage(canvas, 0, 0);
         };
     };
 
     render() {
         return (
-            <div className='screen'>
+            <div>
                 <canvas style={{ display: 'none' }} id='screen' width='64' height='32'/>
                 <canvas className='canvas' id='scaledScreen' width='640' height='320'/>
             </div>

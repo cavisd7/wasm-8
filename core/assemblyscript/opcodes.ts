@@ -19,7 +19,6 @@ export function handleOpcode(opcode: u16): void {
             break;
         case 0x2000:
             /* Call subroutine at NNN */
-            log(69)
             Cpu.stack.push(Cpu.pc);
             Cpu.pc = opcode & 0x0FFF;
 
@@ -68,7 +67,10 @@ export function handleOpcode(opcode: u16): void {
 
             break;
         case 0xA000:
-            /* Set address register to NNN */
+            /**
+             * LDI
+             * Set address register to NN
+             */
             Cpu.I = opcode & 0x0FFF;
 
             break;
@@ -103,7 +105,7 @@ export function handleOpcode(opcode: u16): void {
 
             /* Loop through height of the sprite */
             for (let y: u16 = 0; y < height; y++) {
-                /* Load row of sprite */
+                /* Load row of sprite at address in I */
                 const spriteRow = load<u8>(Cpu.I + y);
 
                 /* Dump */
@@ -136,9 +138,9 @@ export function handleOpcode(opcode: u16): void {
                     };
 
                     if ((screenByte != 0 && spritePixel == 0) || (screenByte == 0 && spritePixel == 1)) {
-                        store<u8>(VERBOSE_DISPLAY_RERFRESH_START + index, 0x01);
+                        store<u8>(VERBOSE_DISPLAY_RERFRESH_START + index, 0xFFFFFFFF);
                     } else {
-                        store<u8>(VERBOSE_DISPLAY_RERFRESH_START + index, 0x00);
+                        store<u8>(VERBOSE_DISPLAY_RERFRESH_START + index, 0);
                     };
                 };
             };
@@ -254,7 +256,7 @@ export function handleOpcode0xF(opcode: u16): void {
 
     switch(opcode & 0x00FF) {
         case 0x07:
-            Cpu.registers[x] = Timer.DelayTimer;
+            Cpu.registers[x] = Cpu.delayTimer;
 
             break;
         case 0x0A:
@@ -263,7 +265,7 @@ export function handleOpcode0xF(opcode: u16): void {
             
             break;
         case 0x15:
-            Timer.DelayTimer = Cpu.registers[x];
+            Cpu.delayTimer = Cpu.registers[x];
 
             break;
         case 0x18:
@@ -279,9 +281,9 @@ export function handleOpcode0xF(opcode: u16): void {
 
             break;
         case 0x33:
-            store<u16>(Cpu.I, Cpu.registers[x] / 100);
-            store<u16>(Cpu.I + 1, (Cpu.registers[x] % 100) / 10);
-            store<u16>(Cpu.I + 2, Cpu.registers[x] % 100);
+            store<u8>(Cpu.I, Cpu.registers[x] / 100);
+            store<u8>(Cpu.I + 1, (Cpu.registers[x] % 100) / 10);
+            store<u8>(Cpu.I + 2, Cpu.registers[x] % 100);
 
             break;
         case 0x55:

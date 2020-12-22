@@ -6,8 +6,6 @@ interface Props {
 interface State {};
 
 export class Footer extends Component<Props, State> {
-    componentDidMount() {};
-
     render() {
         return (
             <div className='footer'>

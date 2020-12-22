@@ -1,26 +1,30 @@
 import { Component, h, Fragment } from 'preact';
 
+import { WasmCore } from './types';
+import { loadWasm } from './utils/wasmUtils';
+
 /* Components */
 import { Header } from './components/Header';
 import { Screen } from './components/Screen';
-import { Rom } from './components/Rom';
-import { Debugger } from './components/Debugger';
 import { Footer } from './components/Footer';
 import { Controls } from './components/Controls';
 import { RomMenu } from './components/RomMenu';
-
-import { WasmCore } from './types';
-import { loadWasm } from './utils/wasmUtils';
+import { CpuState } from './components/debug/CpuState';
+import { Disassembler } from './components/debug/Disassembler';
+import { MemoryViewer } from './components/debug/MemoryViewer';
 
 let wasm8Core: WasmCore;
 
 interface Props {};
 interface State {
     loaded: boolean;
-    isROMLoaded: boolean;
     wasm8State: string;
     isDebugOn: boolean;
     isRomMenuOpen: boolean;
+
+    isROMLoaded: boolean;
+    isWasm8Running: boolean;
+    error: string;
 };
 
 export class App extends Component<Props, State> {
@@ -32,24 +36,25 @@ export class App extends Component<Props, State> {
             isROMLoaded: false,
             wasm8State: 'Shutdown',
             isDebugOn: true,
-            isRomMenuOpen: false
+            isRomMenuOpen: false,
+            isWasm8Running: false,
+            error: ''
         };
     };
-
-    componentDidUpdate(nextProps: Props, nextState: State) {
-        console.log('update: ', nextState)
-    }
 
     componentDidMount() {
         const init = async () => {
             wasm8Core = await loadWasm();
 
-            console.log('Successfully loaded wasm core', wasm8Core);
-
-            wasm8Core.instance.exports.start();
-            //wasm8Core.instance.exports.fontDrawTest();
-
-            this.setState({ ...this.state, wasm8State: 'Waiting', loaded: true });
+            if (wasm8Core.instance && wasm8Core.memory) {
+                console.log('Successfully loaded wasm core', wasm8Core);
+    
+                this.setState({ wasm8State: 'Waiting', loaded: true });
+                wasm8Core.instance.exports.init();
+            } else {
+                console.error('Could not load wasm core!');
+                this.setState({ error: 'Could not load wasm file' });
+            };
         };
 
         init();
@@ -59,22 +64,36 @@ export class App extends Component<Props, State> {
         this.setState({ isRomMenuOpen: false });
     }
 
+    startProgram = () => {
+        if (this.state.isROMLoaded) {
+            this.setState({ isWasm8Running: true });
+        };
+    };
+
+    stopProgram = () => {
+        if (this.state.isROMLoaded && this.state.isWasm8Running) {
+            this.setState({ isWasm8Running: false });
+        };
+    };
+
     render() {
         const { 
             isDebugOn, 
             wasm8State, 
             isROMLoaded, 
-            isRomMenuOpen
+            isRomMenuOpen,
+            error,
+            isWasm8Running
         } = this.state;
 
         return (
             this.state.loaded ? (
-                <Fragment>
+                <div className='container'>
                     <RomMenu 
                         isOpen={isRomMenuOpen} 
                         closeMenu={this.closeRomMenu}
                         wasm8Core={wasm8Core} 
-                        setROMLoaded={() => this.setState({ isROMLoaded: true, wasm8State: 'running' })}
+                        setROMLoaded={() => this.setState({ isROMLoaded: true, wasm8State: 'loaded' })}
                     />
                     <Header
                         isDebugOn={isDebugOn} 
@@ -82,15 +101,32 @@ export class App extends Component<Props, State> {
                         setIsDebugOn={(value) => this.setState({ isDebugOn: value })}
                         openRomMenu={() => this.setState({ isRomMenuOpen: true })}
                     />
-                    <Screen 
-                        wasm8Core={wasm8Core} 
-                        isROMLoaded={isROMLoaded}
-                    />
-                    
-                    <Debugger isDebugOn={isDebugOn}/>
+                    <main className='content'>
+                        <div className='content-top'>
+                            <Screen 
+                                wasm8Core={wasm8Core} 
+                                isROMLoaded={isROMLoaded}
+                                isWasm8Running={isWasm8Running}
+                            />
+                            <CpuState 
+                                wasm8Core={wasm8Core} 
+                                startProgram={this.startProgram}
+                                stopProgram={this.stopProgram}
+                            />
+                        </div>
+                        <div className='content-bottom'>
+                            <Disassembler 
+                                wasm8Core={wasm8Core}
+                                isRomLoaded={isROMLoaded}
+                            />
+                            <MemoryViewer wasm8Core={wasm8Core}/>
+                        </div>
+                    </main>
                     <Controls />
                     <Footer />
-                </Fragment>
+                </div>
+            ) : error ? (
+                <p>{error}</p>
             ) : (
                 <p>loading...</p>
             )

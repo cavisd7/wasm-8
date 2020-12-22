@@ -8,18 +8,28 @@ export const CHIP8_RESERVED_SIZE: i32 = 0x000200;
 
 /* Registers V0 - VF */
 /* 0x000 - 0x010 */
+export const CHIP8_REGISTERS_START: i32 = 0x000000;
+export const CHIP8_REGISTERS_SIZE: i32 = 0x000010;
 
 /* 16-bit address register */
 /* 0x010 - 0x012 */
+export const CHIP8_ADDRESS_REGISTER_START: i32 = 0x000010;
+export const CHIP8_ADDRESS_REGISTER_SIZE: i32 = 0x000002;
 
 /* Program counter */
 /* 0x012 - 0x014 */
+export const CHIP8_PROGRAM_COUNTER_START: i32 = 0x000012;
+export const CHIP8_PROGRAM_COUNTER_SIZE: i32 = 0x000002;
 
 /* Stack pointer */
 /* 0x014 - 0x016 */
+export const CHIP8_STACK_POINTER_START: i32 = 0x000014;
+export const CHIP8_STACK_POINTER_SIZE: i32 = 0x000002;
 
 /* Opcode */
 /* 0x016 - 0x018 */
+export const CHIP8_OPCODE_START: i32 = 0x000016;
+export const CHIP8_OPCODE_SIZE: i32 = 0x000002;
 
 /**
  * This emulator uses the memory reserved for the CHIP-8 interpreter to store the fontset 
@@ -45,5 +55,5 @@ export const DISPLAY_RERFRESH_START: i32 = CALL_STACK_START + CALL_STACK_SIZE;
 export const DISPLAY_RERFRESH_SIZE: i32 = 0x0000FF;
 
 export const VERBOSE_DISPLAY_RERFRESH_START: i32 = DISPLAY_RERFRESH_START + DISPLAY_RERFRESH_SIZE;
-/* 0xFFF - OUT OF BOUNDS */
+/* 0xFFF - OUT OF BOUNDS (6144)*/
 export const VERBOSE_DISPLAY_RERFRESH_SIZE: i32 = 0x000800;

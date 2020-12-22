@@ -12,14 +12,6 @@ interface State {
 };
 
 export class Header extends Component<Props, State> {
-    constructor(props) {
-        super(props);
-    };
-
-    componentDidMount() {
-        console.log(this.props);
-    };
-
     render() {
         const { wasm8State, isDebugOn, setIsDebugOn, openRomMenu } = this.props;
 

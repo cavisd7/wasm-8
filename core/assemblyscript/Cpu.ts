@@ -1,5 +1,13 @@
 import { fontset } from './fontset';
-import { CHIP8_FONTSET_START, CHIP8_PROGRAM_RAM_START } from './constants';
+import { 
+    CHIP8_FONTSET_START, 
+    CHIP8_PROGRAM_RAM_START,
+    CHIP8_PROGRAM_COUNTER_START,
+    CHIP8_OPCODE_START,
+    CHIP8_ADDRESS_REGISTER_START,
+    CHIP8_STACK_POINTER_START,
+    CHIP8_REGISTERS_START
+} from './constants';
 import { handleOpcode } from './opcodes';
 import { log } from './console';
 
@@ -36,8 +44,20 @@ export class Cpu {
         Cpu.I = 0;
         Cpu.sp = 0;
 
+        /* How these variables will be accessed in the future. Using for debug purposes at the moment. */
+        /*store<u16>(CHIP8_PROGRAM_COUNTER_START, 0x0200);
+        store<u16>(CHIP8_OPCODE_START, 0x0000);
+        store<u16>(CHIP8_ADDRESS_REGISTER_START, 0x0000);
+        store<u16>(CHIP8_STACK_POINTER_START, 0x0000);*/
+
         /* Clear stack */
         Cpu.stack.length = 0;
+
+        /* Reset registers */
+        Cpu.registers.forEach((reg, i) => {
+            Cpu.registers[i] = 0x00;
+            //store<u16>(CHIP8_REGISTERS_START + sizeof<u8>() * i, 0x00);
+        });
 
         /* Load fontset */
         for (let i = 0; i < 80; i++) {
@@ -52,13 +72,18 @@ export class Cpu {
          */
 
         /* Load instruction from program memory */
-        let opcode = load<u16>(Cpu.pc);
+        /* Convert to big endian because webassembly stores data as little endian. */
+        let leOpcode = load<u16>(Cpu.pc);
+        let opcode = (leOpcode >> 8) | (leOpcode << 8);
+        Cpu.opcode = opcode;
+        //log(leOpcode)
+        //log(opcode)
 
         /* Increment program counter to point to next instruction */
         Cpu.pc += 2;
 
         /* Execute instruction */
-        handleOpcode((opcode >> 8) | (opcode << 8));
+        handleOpcode(opcode);
     };
 
     static loadProgram(programBuffer: Uint8Array): void {

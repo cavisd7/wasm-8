@@ -1,7 +1,7 @@
 import { h, render } from 'preact';
 
 /* Styles */
-import "./styles/index.css";
+import "./index.css";
 
 import { App } from './App';
 

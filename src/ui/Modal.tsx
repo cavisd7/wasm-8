@@ -41,7 +41,7 @@ export class Modal extends Component<Props, State> {
                     'modal-off': !isOpen
                 })}
             >
-                <div className='modal-content'>
+                <div className={!isOpen ? 'off' : 'modal-content'}>
                     {this.props.children}
                 </div>
             </div>

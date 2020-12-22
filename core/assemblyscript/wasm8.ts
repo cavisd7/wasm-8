@@ -5,11 +5,7 @@ import { CHIP8_FONTSET_START, DISPLAY_RERFRESH_START } from './constants';
 
 memory.grow(1);
 
-export function start(): void {
-    init();
-};
-
-function init(): void {
+export function init(): void {
     Cpu.init();
     Screen.clearVerboseScreen();
     //Screen.turnOnVerboseScreen();
@@ -19,7 +15,7 @@ export function loadProgram(programBuffer: Uint8Array): void {
     Cpu.loadProgram(programBuffer);
 };
 
-export function execute(): void {
+export function emulateCycle(): void {
     Cpu.step();
 };
 
