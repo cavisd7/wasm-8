@@ -1,0 +1,13 @@
+.footer {
+    display: grid;
+    grid-auto-flow: row;
+    text-align: center;
+    align-items: center;
+    color: #1e283a;
+    line-height: 1rem;
+    font-size: 0.75rem;
+}
+
+.footer a {
+    color: #1e283a;
+}

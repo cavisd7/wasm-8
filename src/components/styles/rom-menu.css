@@ -1,0 +1,64 @@
+.rom-menu {
+    display: grid;
+    grid-template-rows: 3rem auto;
+    grid-template-areas: "title close" "roms roms" "load load";
+    gap: 1rem;
+}
+
+.rom-menu h4 {
+    color: #4fcdb9;
+    font-size: 1.5rem;
+}
+
+.close {
+    grid-area: close;
+    justify-self: right;
+}
+
+.load {
+    grid-area: load;
+    justify-self: right;
+}
+
+.roms {
+    grid-area: roms;
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 2rem;
+    align-items: center;
+}
+
+.remote {
+    max-height: 125px;
+    overflow-y: auto;
+}
+
+.rom-li-selected {
+    background-color: #4fcdb9 !important;
+}
+
+.local {
+    justify-self: center;
+}
+
+.local p {
+    font-size: 0.7rem;
+}
+
+.text-button-active {
+    color: #4fcdb9 !important;
+}
+
+.text-button {
+    transition: 0.25s;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    background-color: inherit;
+    padding: 0;
+    margin: 0;
+}
+
+.text-button:hover, .text-button:focus {
+    color: #4fcdb9;
+};

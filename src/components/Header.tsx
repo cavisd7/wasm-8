@@ -1,6 +1,8 @@
 import classnames from 'classnames';
 import { Component, Fragment, h } from 'preact';
 
+import './styles/header.css';
+
 interface Props {
     wasm8State: string;
     isDebugOn: boolean;
@@ -34,27 +36,6 @@ export class Header extends Component<Props, State> {
                 </div>
                 <div className='state'>
                     <p>State: <span>{wasm8State}</span></p>
-                    <div style={{ display: 'flex' }}>
-                        <p style={{ marginRight: '0.5rem' }}>Debugger: </p>
-                        <button
-                            className={classnames(
-                                'text-button', 
-                                { 'text-button-active': isDebugOn }
-                            )}
-                            onClick={() => setIsDebugOn(true)}
-                        >
-                            on
-                        </button>
-                        <button
-                            className={classnames(
-                                'text-button', 
-                                { 'text-button-active': !isDebugOn }
-                            )}
-                            onClick={() => setIsDebugOn(false)}
-                        >
-                            off
-                        </button>
-                    </div>
                 </div>
             </div>
         );

@@ -1,6 +1,8 @@
 import { Component, h } from "preact";
 import classnames from 'classnames';
 
+import "../styles/debug-disassembler.css";
+
 import { WasmCore } from '../../types';
 import { dissassemble } from '../../utils/wasmUtils';
 
@@ -51,6 +53,10 @@ export class Disassembler extends Component<Props, State> {
 
             this.setState({ instructions });
         };
+
+        if (prevProps.isRomLoaded && !this.props.isRomLoaded) {
+            this.setState({ instructions: [] });
+        }
     };
 
     render() {

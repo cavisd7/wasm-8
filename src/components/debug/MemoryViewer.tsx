@@ -1,5 +1,7 @@
 import { Component, h } from "preact";
 
+import "../styles/debug-memory.css";
+
 import { WasmCore } from '../../types';
 import { deepCompare } from '../../utils/object';
 
@@ -33,7 +35,7 @@ export class MemoryViewer extends Component<Props, State> {
     };
 
     componentDidUpdate() {
-        console.log('[MemoryViewer] componentDidUpdate');
+        //console.log('[MemoryViewer] componentDidUpdate');
     };
 
     componentWillUnmount() {

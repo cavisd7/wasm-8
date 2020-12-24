@@ -1,0 +1,47 @@
+.menu {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 0.5rem;
+    width: -moz-fit-content;
+    width: fit-content;
+}
+
+.header {
+    grid-template-areas: "logo menu state";
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: .5rem;
+}
+
+.header h1 {
+    margin: 0;
+    color: #4fcdb9;
+}
+
+.state {
+    line-height: .7rem;
+}
+
+.state p, button {
+    font-size: 11.2px;
+    margin: 0;
+}
+
+.state p span {
+    color: #4fcdb9;
+}
+
+.icon-button {
+    display: grid;
+    grid-auto-flow: column;
+    align-content: center;
+    transition: 0.25s;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.icon-button:hover {
+    color: #4fcdb9
+}

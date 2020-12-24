@@ -1,0 +1,84 @@
+.debugger-cpu-state {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.debugger-cpu-state-item {
+    font-size: 0.8rem;
+}
+
+.debugger-cpu-state-container {
+    margin-bottom: 1.5rem;
+}
+
+.debugger-cpu-state-container h4 {
+    margin-bottom: 0.5rem !important;
+}
+
+.debugger-cpu-state-item span {
+    font-weight: 600;
+}
+
+.debugger-cpu-state-item p {
+    color: #de935f;
+    background-color: #101320;
+}
+
+.state-container {
+    height: 90%; 
+    display: grid; 
+    gap: 0.5rem; 
+    grid-template-rows: auto;
+}
+
+.state-content h4 {
+    margin-bottom: 0.3rem;
+}
+
+.cpu-state-table {
+    width: 100%;
+}
+
+.cpu-state-tbody {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+
+.cpu-state-tbody tr {
+    font-size: 0.8rem;
+}
+
+.cpu-state-th {
+    font-weight: 600;
+}
+
+.cpu-state-tbody tr td {
+    color: #de935f;
+}
+
+.cpu-state-tbody tr:nth-child(2n - 2){
+    background-color: #060916;
+}
+
+.state-buttons {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 1rem;
+}
+
+.filled-button {
+    transition: 0.25s;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    background-color: #060916;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.filled-button:hover, .filled-button:focus {
+    background-color: #4fcdb9;
+};

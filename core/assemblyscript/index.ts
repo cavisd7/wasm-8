@@ -1,5 +1,5 @@
 export { 
-    init, 
+    reset, 
     loadProgram, 
     emulateCycle,
     key_down,

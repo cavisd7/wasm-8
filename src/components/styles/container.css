@@ -1,0 +1,16 @@
+.outlined-container {
+    border: 1px solid #1e283a;
+    border-radius: 3px;
+    padding: 0rem 1rem 1rem 1rem;
+}
+
+.outlined-container h3 {
+    color: #4fcdb9;
+    text-align: left;
+    margin-left: 50px;
+    margin-top: -15px;
+}
+
+.outlined-container h3 span {
+    background-color: #030613;
+}

@@ -1,5 +1,7 @@
 import { Component, h, Fragment } from 'preact';
 
+import "./components/styles/main.css";
+
 import { WasmCore } from './types';
 import { loadWasm } from './utils/wasmUtils';
 
@@ -50,7 +52,7 @@ export class App extends Component<Props, State> {
                 console.log('Successfully loaded wasm core', wasm8Core);
     
                 this.setState({ wasm8State: 'Waiting', loaded: true });
-                wasm8Core.instance.exports.init();
+                wasm8Core.instance.exports.reset();
             } else {
                 console.error('Could not load wasm core!');
                 this.setState({ error: 'Could not load wasm file' });
@@ -66,13 +68,14 @@ export class App extends Component<Props, State> {
 
     startProgram = () => {
         if (this.state.isROMLoaded) {
-            this.setState({ isWasm8Running: true });
+            this.setState({ isWasm8Running: true, wasm8State: 'Running' });
         };
     };
 
     stopProgram = () => {
         if (this.state.isROMLoaded && this.state.isWasm8Running) {
-            this.setState({ isWasm8Running: false });
+            wasm8Core.instance.exports.reset();
+            this.setState({ isWasm8Running: false, isROMLoaded: false, wasm8State: 'Ejected' });
         };
     };
 

@@ -5,8 +5,8 @@ import { CHIP8_FONTSET_START, DISPLAY_RERFRESH_START } from './constants';
 
 memory.grow(1);
 
-export function init(): void {
-    Cpu.init();
+export function reset(): void {
+    Cpu.reset();
     Screen.clearVerboseScreen();
     //Screen.turnOnVerboseScreen();
 };

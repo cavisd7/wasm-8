@@ -96,9 +96,12 @@ export function handleOpcode(opcode: u16): void {
             Cpu.registers[15] = 0;
 
             /* Dump */
-            if (0) {
+            if (1) {
+                log(VERBOSE_DISPLAY_RERFRESH_START)
                 log(xPos);              
-                log(yPos);              
+                log(yPos);
+                log((opcode & 0x0F00) >> 8);
+                log((opcode & 0x00F0) >> 4);             
                 log(height);            
                 log(Cpu.registers[15]); 
             };

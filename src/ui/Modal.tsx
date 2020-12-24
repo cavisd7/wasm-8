@@ -1,6 +1,8 @@
 import { Component, h, RefObject } from "preact";
 import classnames from 'classnames';
 
+import "../components/styles/modal.css";
+
 interface Props {
     isOpen: boolean;
     closeModal: () => void;

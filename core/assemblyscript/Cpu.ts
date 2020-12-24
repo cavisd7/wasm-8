@@ -2,6 +2,7 @@ import { fontset } from './fontset';
 import { 
     CHIP8_FONTSET_START, 
     CHIP8_PROGRAM_RAM_START,
+    CHIP8_PROGRAM_RAM_SIZE,
     CHIP8_PROGRAM_COUNTER_START,
     CHIP8_OPCODE_START,
     CHIP8_ADDRESS_REGISTER_START,
@@ -33,8 +34,8 @@ export class Cpu {
 
     static delayTimer: u8;
 
-    /* Initialize registers and memory */
-    static init (): void {
+    /* Reset registers and memory */
+    static reset (): void {
         /**
          * Initialize program counter at 0x200 because most programs start here 
          * since the interpreter occupies the first 512 bytes of memory.
@@ -58,6 +59,11 @@ export class Cpu {
             Cpu.registers[i] = 0x00;
             //store<u16>(CHIP8_REGISTERS_START + sizeof<u8>() * i, 0x00);
         });
+
+        /* Clear program memory */
+        for (let j = 0; j < CHIP8_PROGRAM_RAM_SIZE; j++) {
+            store<u8>(CHIP8_PROGRAM_RAM_START + (sizeof<u8>() * j), 0x00);
+        };
 
         /* Load fontset */
         for (let i = 0; i < 80; i++) {

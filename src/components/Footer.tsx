@@ -1,5 +1,7 @@
 import { Component, Fragment, h } from 'preact';
 
+import "./styles/footer.css";
+
 interface Props {
 };
 

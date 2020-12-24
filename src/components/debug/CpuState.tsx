@@ -1,5 +1,7 @@
 import { Component, Fragment, h } from "preact";
 
+import "../styles/debug-cpu-state.css";
+
 import { WasmCore } from '../../types';
 import { deepCompare } from '../../utils/object';
 import { Container } from "./ui/Container";
@@ -127,7 +129,7 @@ export class CpuState extends Component<Props, State> {
 
         return (  
             <Container heading='State'>
-                <div style={{ display: 'grid', gap: '0.5rem' }}> 
+                <div className='state-container'> 
                     <div className='state-content'> 
                         <div className='debugger-cpu-state'>
                             {
@@ -156,9 +158,19 @@ export class CpuState extends Component<Props, State> {
                             </tbody>
                         </table>
                     </div>
-                    <div>
-                        <button className='text-button' onClick={startProgram}>start</button>
-                        <button className='text-button' onClick={stopProgram}>stop</button>
+                    <div className='state-buttons'>
+                        <button
+                            className='filled-button'
+                            onClick={startProgram}
+                        >
+                            start
+                        </button>
+                        <button
+                            className='filled-button'
+                            onClick={stopProgram}
+                        >
+                            stop
+                        </button>
                     </div>
                 </div>
             </Container>  

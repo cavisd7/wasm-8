@@ -1,0 +1,24 @@
+.container {
+    display: grid;
+    grid-auto-flow: row;
+    gap: 2.0rem;
+}
+
+.content {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.content-top {
+    display: grid;
+    grid-template-rows: 320px;
+    grid-template-columns: 640px auto;
+    gap: 1.5rem;
+}
+
+.content-bottom {
+    display: grid;
+    grid-template-rows: 250px;
+    grid-template-columns: 500px 500px;
+    gap: 1.5rem;
+}

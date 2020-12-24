@@ -1,0 +1,59 @@
+.controls p {
+    font-size: .9rem;
+    line-height: 0.75rem;
+}   
+
+.controls h3 {
+    color: #4fcdb9;
+    overflow: hidden;
+    text-align: left;
+}   
+
+.controls h3:after, before {
+    background-color: #1e283a;
+    content: "";
+    display: inline-block;
+    height: 1px;
+    position: relative;
+    vertical-align: middle;
+    width: 100%;
+}  
+
+.controls h3:before {
+    background-color: #1e283a;
+    content: "";
+    display: inline-block;
+    height: 1px;
+    position: relative;
+    vertical-align: middle;
+    width: 55%;
+}
+
+.controls h3:before {
+    right: 0.2em;
+    margin-left: -50%;
+}
+.controls h3:after {
+    left: 0.2em;
+    margin-right: -50%;
+}
+
+kbd {
+    color: #030613;
+    background-color: #1e283a;
+    /* font-weight: bold; */
+    padding: 0.1rem 0.3rem;
+    margin: 3px 0;
+    border-radius: 0.1rem;
+    display: inline-block;
+    font-size: 0.7rem;
+    line-height: 0.7rem;
+}
+
+.keys {
+    max-width: 860px;
+    display: flex;
+    justify-content: space-around;
+    margin-left: auto;
+    margin-right: auto;
+}

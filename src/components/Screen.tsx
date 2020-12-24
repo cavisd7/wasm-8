@@ -2,6 +2,8 @@ import { Component, h } from 'preact';
 
 import { WasmCore } from '../types';
 
+import "./styles/screen.css";
+
 const keyMap = {
     Digit1: 0x1,
     Digit2: 0x2,
@@ -19,7 +21,7 @@ const keyMap = {
     KeyX: 0x0,
     KeyC: 0xb,
     KeyV: 0xf,
-}
+};
 
 interface Props {
     wasm8Core: WasmCore;
@@ -47,12 +49,7 @@ export class Screen extends Component<Props, State> {
         const canvas: HTMLCanvasElement = (this.base as Element).querySelector('#screen');
         const ctx = canvas.getContext('2d');
         const imageData = ctx.createImageData(canvas.width, canvas.height);
-        //ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        const scaledCanvas: HTMLCanvasElement = (this.base as Element).querySelector('#scaledScreen');
-        const scaledCtx = scaledCanvas.getContext('2d');
-        scaledCtx.clearRect(0, 0, scaledCanvas.width, scaledCanvas.height);
-        scaledCtx.scale(10, 10);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         const update = () => {
             if (!lastTick) {
@@ -75,7 +72,7 @@ export class Screen extends Component<Props, State> {
 
                 wasm8Core.instance.exports.decrementDeleyTimer();
 
-                this.draw(canvas, ctx, scaledCtx, imageData);
+                this.draw(ctx, imageData);
             };
 
             /**
@@ -87,7 +84,7 @@ export class Screen extends Component<Props, State> {
         update();
 
         window.addEventListener('keydown', (e: KeyboardEvent) => {
-            console.log('key down: ', keyMap[e.code]);
+            //console.log('key down: ', keyMap[e.code]);
 
             if (keyMap[e.code]) {
                 wasm8Core.instance.exports.key_down(keyMap[e.code]);
@@ -95,7 +92,7 @@ export class Screen extends Component<Props, State> {
         });
 
         window.addEventListener('keyup', (e: KeyboardEvent) => {
-            console.log('key up: ', keyMap[e.code]);
+            //console.log('key up: ', keyMap[e.code]);
 
             if (keyMap[e.code]) {
                 wasm8Core.instance.exports.key_up(keyMap[e.code]);
@@ -103,78 +100,50 @@ export class Screen extends Component<Props, State> {
         });
     };
 
+    componentDidUpdate(prevProps: Props, _: State) {
+        if (prevProps.isROMLoaded && !this.props.isROMLoaded) {
+            const canvas: HTMLCanvasElement = (this.base as Element).querySelector('#screen');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        };
+    };
+
     componentWillUnmount() {
         clearTimeout(this.updateTimeout);
     };
 
-    draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, scaledCtx: CanvasRenderingContext2D, imageData: ImageData) {
-        if (1) {
-            const imageBuffer = this.props.wasm8Core.memory.subarray(4095, 6143);
-            const imageDataArray = new Uint8ClampedArray(64 * 32 * 4);
+    draw(ctx: CanvasRenderingContext2D, imageData: ImageData) {
+        const imageBuffer = this.props.wasm8Core.memory.subarray(4095, 6143);
+        const imageDataArray = new Uint8ClampedArray(64 * 32 * 4);
 
-            //console.log('imageBuffer: ', imageBuffer);
+        //console.log('imageBuffer: ', imageBuffer);
 
-            for (let i = 0; i < imageBuffer.length; i++) {
-                if (imageBuffer[i] == 255) {
-                    imageDataArray[i * 4] = 79;
-                    imageDataArray[i * 4 + 1] = 205;
-                    imageDataArray[i * 4 + 2] = 185;
-                    imageDataArray[i * 4 + 3] = 255;
-                } else if (imageBuffer[i] == 0) {
-                    imageDataArray[i * 4] = 3;
-                    imageDataArray[i * 4 + 1] = 6;
-                    imageDataArray[i * 4 + 2] = 19;
-                    imageDataArray[i * 4 + 3] = 255;
-                };
+        for (let i = 0; i < imageBuffer.length; i++) {
+            if (imageBuffer[i] == 255) {
+                imageDataArray[i * 4] = 79;
+                imageDataArray[i * 4 + 1] = 205;
+                imageDataArray[i * 4 + 2] = 185;
+                imageDataArray[i * 4 + 3] = 255;
+            } else if (imageBuffer[i] == 0) {
+                imageDataArray[i * 4] = 3;
+                imageDataArray[i * 4 + 1] = 6;
+                imageDataArray[i * 4 + 2] = 19;
+                imageDataArray[i * 4 + 3] = 255;
             };
-
-            for (let i = 0; i < imageDataArray.length; i++) {
-                imageData.data[i] = imageDataArray[i];
-            };
-
-            ctx.beginPath();
-            ctx.clearRect(0, 0, 64, 32);
-            scaledCtx.clearRect(0, 0, 640, 320);
-            ctx.putImageData(imageData, 0, 0);
-            scaledCtx.drawImage(canvas, 0, 0);
-        } else {
-            const imageBuffer = this.props.wasm8Core.memory.subarray(3839, 4095);
-            const imageDataArray = new Uint8ClampedArray(64 * 32 * 4);
-
-            //console.log('imageBuffer: ', imageBuffer);
-
-            for (let i = 0; i < imageBuffer.length; i++) {
-                for (let j = 0; j < 8; j++) {
-                    if (((imageBuffer[i] >> (7 - j)) & 0x01) == 1) {
-                        imageDataArray[((i + j) + i * 7) * 4] = 79;
-                        imageDataArray[((i + j) + i * 7) * 4 + 1] = 205;
-                        imageDataArray[((i + j) + i * 7) * 4 + 2] = 185;
-                        imageDataArray[((i + j) + i * 7) * 4 + 3] = 255;
-                    } else if (((imageBuffer[i] >> (7 - j)) & 0x01) == 0) {
-                        imageDataArray[((i + j) + i * 7) * 4] = 0;
-                        imageDataArray[((i + j) + i * 7) * 4 + 1] = 0;
-                        imageDataArray[((i + j) + i * 7) * 4 + 2] = 0;
-                        imageDataArray[((i + j) + i * 7) * 4 + 3] = 255;
-                    };
-                };
-            };
-
-            for (let i = 0; i < imageDataArray.length; i++) {
-                imageData.data[i] = imageDataArray[i];
-            };
-
-            //ctx.beginPath();
-            ctx.clearRect(0, 0, 64, 32);
-            ctx.putImageData(imageData, 0, 0);
-            //scaledCtx.drawImage(canvas, 0, 0);
         };
+
+        for (let i = 0; i < imageDataArray.length; i++) {
+            imageData.data[i] = imageDataArray[i];
+        };
+
+        ctx.clearRect(0, 0, 64, 32);
+        ctx.putImageData(imageData, 0, 0);
     };
 
     render() {
         return (
             <div>
-                <canvas style={{ display: 'none' }} id='screen' width='64' height='32'/>
-                <canvas className='canvas' id='scaledScreen' width='640' height='320'/>
+                <canvas className='canvas' id='screen' width='64' height='32'/>
             </div>
         );
     };
